@@ -1,180 +1,168 @@
 import tasks.EpicTask;
 import tasks.PartEpicTask;
 import tasks.SimpleTask;
+import tasks.TaskStatus;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 public class TaskManager {
-    private final HashMap<Integer, SimpleTask> taskMap;
+    private final HashMap<Integer, SimpleTask> simpleTaskMap;
+    private final HashMap<Integer, EpicTask> epicTaskMap;
+    private final HashMap<Integer, PartEpicTask> partEpicTaskMap;
 
     public TaskManager() {
-        this.taskMap = new HashMap<>();
+        this.simpleTaskMap = new HashMap<>();
+        this.epicTaskMap = new HashMap<>();
+        this.partEpicTaskMap = new HashMap<>();
     }
 
-    public HashMap<Integer, SimpleTask> getAllSimpleTask(){
-        HashMap<Integer, SimpleTask> simpleTaskMap = new HashMap<>();
-
-        for (SimpleTask task : taskMap.values()) {
-            if (task.getClass() == SimpleTask.class){
-                simpleTaskMap.put(task.getId(), task);
-            }
-        }
-
-        return simpleTaskMap;
+    public ArrayList<SimpleTask> getAllSimpleTask(){
+        return new ArrayList<>(simpleTaskMap.values());
     }
 
-    public HashMap<Integer, EpicTask> getAllEpicTask(){
-        HashMap<Integer, EpicTask> epicTaskMap = new HashMap<>();
-
-        for (SimpleTask task : taskMap.values()) {
-            if (task.getClass() == EpicTask.class){
-                EpicTask epicTask = (EpicTask) task;
-                epicTaskMap.put(epicTask.getId(), epicTask);
-            }
-        }
-
-        return epicTaskMap;
+    public ArrayList<EpicTask> getAllEpicTask(){
+        return new ArrayList<>(epicTaskMap.values());
     }
 
-    public HashMap<Integer, PartEpicTask> getAllPartTask(){
-        HashMap<Integer, PartEpicTask> partTaskMap = new HashMap<>();
-
-        for (SimpleTask task : taskMap.values()) {
-            if (task.getClass() == EpicTask.class){
-                EpicTask epicTask = (EpicTask) task;
-                HashMap<Integer, PartEpicTask> epicTaskPartTaskMap = epicTask.getPartTaskMap();
-                for (PartEpicTask partTask : epicTaskPartTaskMap.values()) {
-                    partTaskMap.put(partTask.getId(), partTask);
-                }
-            }
-        }
-
-        return partTaskMap;
+    public ArrayList<PartEpicTask> getAllPartEpicTask(){
+        return new ArrayList<>(partEpicTaskMap.values());
     }
 
     public void removeAllSimpleTask(){
-        Iterator<Map.Entry<Integer, SimpleTask>> iterator = taskMap.entrySet().iterator();
-        while (iterator.hasNext()){
-            Map.Entry<Integer, SimpleTask> entryTaskMap = iterator.next();
-            SimpleTask simpleTask = entryTaskMap.getValue();
-            if(simpleTask.getClass() == SimpleTask.class){
-                iterator.remove();
-            }
-        }
+        simpleTaskMap.clear();
     }
 
     public void removeAllEpicTask(){
-        removeAllPartEpicTask();
-        Iterator<Map.Entry<Integer, SimpleTask>> iterator = taskMap.entrySet().iterator();
-        while (iterator.hasNext()){
-            Map.Entry<Integer, SimpleTask> entryTaskMap = iterator.next();
-            SimpleTask simpleTask = entryTaskMap.getValue();
-            if(simpleTask.getClass() == EpicTask.class){
-                iterator.remove();
-            }
-        }
+        epicTaskMap.clear();
+        partEpicTaskMap.clear();
     }
 
     public void removeAllPartEpicTask(){
-        for (SimpleTask task : taskMap.values()) {
-            if (task.getClass() == EpicTask.class){
-                EpicTask epicTask = (EpicTask) task;
-                epicTask.removeAllPartTaskMap();
-            }
+        partEpicTaskMap.clear();
+
+        for (EpicTask epicTask : epicTaskMap.values()) {
+            epicTask.removeAllPartTask();
+            this.updateEpicTaskStatus(epicTask);
         }
     }
 
-    public Optional<SimpleTask> getTaskById(int id){
-        if (taskMap.containsKey(id)){
-            return Optional.of(taskMap.get(id));
-        }
-
-        for (SimpleTask task : taskMap.values()) {
-            if (task.getClass() == EpicTask.class){
-                EpicTask epicTask = (EpicTask) task;
-
-                Optional<PartEpicTask> optionalPartEpicTask = epicTask.getPartEpicTaskById(id);
-                if (optionalPartEpicTask.isPresent()){
-                    return Optional.of(optionalPartEpicTask.get());
-                }
-            }
-        }
-
-        return Optional.empty();
+    public SimpleTask getSimpleTaskById(int id){
+        return simpleTaskMap.get(id);
     }
 
-    public void makeNewTask(SimpleTask task){
-        if (task.getClass() == PartEpicTask.class){
-            PartEpicTask partEpicTask = (PartEpicTask) task;
-            EpicTask epicTask = partEpicTask.getLinkToConnectEpicTask();
-            epicTask.putPartEpicTask(partEpicTask);
+    public EpicTask getEpicTaskById(int id){
+        return epicTaskMap.get(id);
+    }
+
+    public PartEpicTask getPartEpicTaskById(int id){
+        return partEpicTaskMap.get(id);
+    }
+
+    public void makeNewSimpleTask(SimpleTask simpleTask){
+        int taskId = simpleTask.getId();
+        simpleTaskMap.put(taskId, simpleTask);
+    }
+
+    public void makeNewEpicTask(EpicTask epicTask){
+        int taskId = epicTask.getId();
+        epicTaskMap.put(taskId, epicTask);
+    }
+
+    public void makeNewPartEpicTask(PartEpicTask partEpicTask){
+        int taskId = partEpicTask.getId();
+        int idEpicTask = partEpicTask.getIdConnectEpicTask();
+        EpicTask epicTask = epicTaskMap.get(idEpicTask);
+
+        if (!epicTask.getListPartTaskId().contains(taskId)){
+            epicTask.addPartTaskId(taskId);
+        }
+
+        partEpicTaskMap.put(taskId, partEpicTask);
+        this.updateEpicTaskStatus(epicTask);
+    }
+
+    public void updateSimpleTask(SimpleTask simpleTask){
+        makeNewSimpleTask(simpleTask);
+    }
+
+    public void updateEpicTask(EpicTask epicTask){
+        makeNewEpicTask(epicTask);
+    }
+
+    public void updatePartEpicTask(PartEpicTask partEpicTask){
+        makeNewPartEpicTask(partEpicTask);
+    }
+
+    public void removeSimpleTaskById(int id){
+       simpleTaskMap.remove(id);
+    }
+
+    public void removeEpicTaskById(int id){
+        EpicTask epicTask = epicTaskMap.get(id);
+        ArrayList<PartEpicTask> listOfAllPartEpicTaskExactEpic = this.getListOfAllPartEpicTaskExactEpic(epicTask);
+
+        for (PartEpicTask partEpicTask : listOfAllPartEpicTaskExactEpic) {
+            int partEpicTaskId = partEpicTask.getId();
+            partEpicTaskMap.remove(partEpicTaskId);
+        }
+
+        epicTaskMap.remove(id);
+
+    }
+
+    public void removePartEpicTaskById(int id){
+        PartEpicTask partEpicTask = partEpicTaskMap.get(id);
+        int idConnectEpicTask = partEpicTask.getIdConnectEpicTask();
+        EpicTask epicTask = epicTaskMap.get(idConnectEpicTask);
+        epicTask.removePartTaskById(id);
+        partEpicTaskMap.remove(id);
+        this.updateEpicTaskStatus(epicTask);
+    }
+
+    public ArrayList<PartEpicTask> getListOfAllPartEpicTaskExactEpic(EpicTask epicTask){
+        ArrayList<PartEpicTask> ListOfAllPartEpicTaskExactEpic = new ArrayList<>();
+
+        ArrayList<Integer> listPartTaskId = epicTask.getListPartTaskId();
+        for (Integer id : listPartTaskId) {
+            PartEpicTask partEpicTaskExactEpic = this.getPartEpicTaskById(id);
+            ListOfAllPartEpicTaskExactEpic.add(partEpicTaskExactEpic);
+        }
+
+        return ListOfAllPartEpicTaskExactEpic;
+    }
+
+    private void updateEpicTaskStatus(EpicTask epicTask){
+        ArrayList<Integer> listPartTaskId = epicTask.getListPartTaskId();
+        boolean isAllCurrentStatusOfPartEpicTaskNew = true;
+        boolean isAllCurrentStatusOfPartEpicTaskDone = true;
+
+        if (listPartTaskId.isEmpty()){
+            epicTask.setStatus(TaskStatus.NEW);
             return;
         }
 
-        if (task.getClass() == EpicTask.class){
-            EpicTask epicTask = (EpicTask) task;
-            taskMap.put(epicTask.getId(), epicTask);
+        for (Integer id : listPartTaskId) {
+            PartEpicTask partEpicTask = partEpicTaskMap.get(id);
+            TaskStatus currentStatusOfPartEpicTask = partEpicTask.getStatus();
+            if (currentStatusOfPartEpicTask == TaskStatus.DONE
+                    || currentStatusOfPartEpicTask == TaskStatus.IN_PROGRESS){
+                isAllCurrentStatusOfPartEpicTaskNew = false;
+            }
+            if (currentStatusOfPartEpicTask == TaskStatus.NEW
+                    || currentStatusOfPartEpicTask == TaskStatus.IN_PROGRESS){
+                isAllCurrentStatusOfPartEpicTaskDone = false;
+            }
+            if (!isAllCurrentStatusOfPartEpicTaskDone && !isAllCurrentStatusOfPartEpicTaskNew){
+                epicTask.setStatus(TaskStatus.IN_PROGRESS);
+                return;
+            }
+        }
+
+        if (isAllCurrentStatusOfPartEpicTaskNew){
+            epicTask.setStatus(TaskStatus.NEW);
             return;
         }
 
-        taskMap.put(task.getId(), task);
-    }
-
-    public void updateTask(SimpleTask task){
-        makeNewTask(task);
-    }
-
-    public void removeTaskById(Integer id){
-        if (taskMap.containsKey(id)){
-            taskMap.remove(id);
-            return;
-        }
-
-        for (SimpleTask task : taskMap.values()) {
-            if (task.getClass() == EpicTask.class){
-                EpicTask epicTask = (EpicTask) task;
-                if (epicTask.containsPartEpicTaskKey(id)) {
-                    epicTask.removePartEpicTask(id);
-                    return;
-                }
-            }
-        }
-    }
-
-    public Optional<HashMap<Integer, PartEpicTask>> getEpicPartTaskMap(EpicTask epicTask){
-        if(taskMap.containsValue(epicTask)){
-            return Optional.of(epicTask.getPartTaskMap());
-        }else {
-            return Optional.empty();
-        }
-    }
-
-    public Optional<HashMap<Integer, PartEpicTask>> getEpicPartTaskMapById(int epicTaskId){
-        if(taskMap.containsKey(epicTaskId)){
-            EpicTask epicTask = (EpicTask) taskMap.get(epicTaskId);
-            return Optional.of(epicTask.getPartTaskMap());
-        }else {
-            return Optional.empty();
-        }
-    }
-
-    public HashMap<Integer, SimpleTask> getAllTasks(){
-        return taskMap;
-    }
-
-    public void printAllTask(){
-        String line = "~~~~~~~";
-        for (SimpleTask value : taskMap.values()) {
-            System.out.println(line.repeat(10));
-            System.out.println(value);
-            if (value.getClass() == EpicTask.class){
-                EpicTask epicTask = (EpicTask) value;
-                epicTask.printAll();
-            }
-            System.out.println(line.repeat(10));
-        }
+        epicTask.setStatus(TaskStatus.DONE);
     }
 }

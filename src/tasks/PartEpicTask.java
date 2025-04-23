@@ -1,31 +1,32 @@
 package tasks;
 
 public class PartEpicTask extends SimpleTask{
-    private final EpicTask linkToConnectEpicTask;
+    private final int idConnectEpicTask;
 
-    public PartEpicTask(String name, String description, EpicTask linkToConnectEpicTask) {
+    public PartEpicTask(String name, String description, int idConnectEpicTask) {
         super(name, description);
-        this.linkToConnectEpicTask = linkToConnectEpicTask;
+        this.idConnectEpicTask = idConnectEpicTask;
     }
 
-    public PartEpicTask(String name, String description, TaskStatus status, EpicTask linkToConnectEpicTask) {
+    public PartEpicTask(String name, String description, TaskStatus status, int idConnectEpicTask) {
         super(name, description, status);
-        this.linkToConnectEpicTask = linkToConnectEpicTask;
+        this.idConnectEpicTask = idConnectEpicTask;
     }
 
-    public PartEpicTask(String name, String description, TaskStatus status, int id, EpicTask linkToConnectEpicTask) {
+    public PartEpicTask(String name, String description, TaskStatus status, int id, int idConnectEpicTask) {
         super(name, description, status, id);
-        this.linkToConnectEpicTask = linkToConnectEpicTask;
+        this.idConnectEpicTask = idConnectEpicTask;
     }
 
-    public EpicTask getLinkToConnectEpicTask() {
-        return linkToConnectEpicTask;
+    public int getIdConnectEpicTask() {
+        return idConnectEpicTask;
     }
 
     @Override
     public String toString() {
         return "PartEpicTask{" +
                 "id=" + id +
+                ", idConnectEpicTask=" + idConnectEpicTask +
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", status=" + status +
