@@ -22,14 +22,4 @@ public class PartEpicTask extends SimpleTask{
         return idConnectEpicTask;
     }
 
-    @Override
-    public String toString() {
-        return "PartEpicTask{" +
-                "id=" + id +
-                ", idConnectEpicTask=" + idConnectEpicTask +
-                ", name='" + name + '\'' +
-                ", description='" + description + '\'' +
-                ", status=" + status +
-                '}';
-    }
 }

@@ -5,8 +5,8 @@ import java.util.Objects;
 public class SimpleTask {
     private static int idGenerator = 0;
     int id;
-    String name;
-    String description;
+    private final String name;
+    private final String description;
     TaskStatus status;
 
     public SimpleTask(String name, String description) {

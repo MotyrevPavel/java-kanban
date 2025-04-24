@@ -120,15 +120,15 @@ public class TaskManager {
     }
 
     public ArrayList<PartEpicTask> getListOfAllPartEpicTaskExactEpic(EpicTask epicTask){
-        ArrayList<PartEpicTask> ListOfAllPartEpicTaskExactEpic = new ArrayList<>();
+        ArrayList<PartEpicTask> listOfAllPartEpicTaskExactEpic = new ArrayList<>();
 
         ArrayList<Integer> listPartTaskId = epicTask.getListPartTaskId();
         for (Integer id : listPartTaskId) {
             PartEpicTask partEpicTaskExactEpic = this.getPartEpicTaskById(id);
-            ListOfAllPartEpicTaskExactEpic.add(partEpicTaskExactEpic);
+            listOfAllPartEpicTaskExactEpic.add(partEpicTaskExactEpic);
         }
 
-        return ListOfAllPartEpicTaskExactEpic;
+        return listOfAllPartEpicTaskExactEpic;
     }
 
     private void updateEpicTaskStatus(EpicTask epicTask){
@@ -144,12 +144,14 @@ public class TaskManager {
         for (Integer id : listPartTaskId) {
             PartEpicTask partEpicTask = partEpicTaskMap.get(id);
             TaskStatus currentStatusOfPartEpicTask = partEpicTask.getStatus();
-            if (currentStatusOfPartEpicTask == TaskStatus.DONE
-                    || currentStatusOfPartEpicTask == TaskStatus.IN_PROGRESS){
+            if (currentStatusOfPartEpicTask == TaskStatus.IN_PROGRESS){
+                epicTask.setStatus(TaskStatus.IN_PROGRESS);
+                return;
+            }
+            if (currentStatusOfPartEpicTask == TaskStatus.DONE){
                 isAllCurrentStatusOfPartEpicTaskNew = false;
             }
-            if (currentStatusOfPartEpicTask == TaskStatus.NEW
-                    || currentStatusOfPartEpicTask == TaskStatus.IN_PROGRESS){
+            if (currentStatusOfPartEpicTask == TaskStatus.NEW){
                 isAllCurrentStatusOfPartEpicTaskDone = false;
             }
             if (!isAllCurrentStatusOfPartEpicTaskDone && !isAllCurrentStatusOfPartEpicTaskNew){

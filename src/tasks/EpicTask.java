@@ -25,14 +25,5 @@ public class EpicTask extends SimpleTask{
     public ArrayList<Integer> getListPartTaskId() {
         return new ArrayList<>(listPartTaskId);
     }
-
-    @Override
-    public String toString() {
-        return "EpicTask{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", description='" + description + '\'' +
-                ", status=" + status +
-                '}';
-    }
+    
 }
