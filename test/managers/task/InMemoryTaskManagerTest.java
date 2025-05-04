@@ -9,12 +9,13 @@ import tasks.SimpleTask;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 class InMemoryTaskManagerTest {
-    private HashMap<Integer, SimpleTask> simpleTaskMap;
-    private HashMap<Integer, EpicTask> epicTaskMap;
-    private HashMap<Integer, PartEpicTask> partEpicTaskMap;
+    private Map<Integer, SimpleTask> simpleTaskMap;
+    private Map<Integer, EpicTask> epicTaskMap;
+    private Map<Integer, PartEpicTask> partEpicTaskMap;
     InMemoryTaskManager inMemoryTaskManager;
 
     @BeforeEach
@@ -23,15 +24,15 @@ class InMemoryTaskManagerTest {
         try {
             Field fieldSimpleTaskMap = inMemoryTaskManager.getClass().getDeclaredField("simpleTaskMap");
             fieldSimpleTaskMap.setAccessible(true);
-            simpleTaskMap = (HashMap<Integer, SimpleTask>) fieldSimpleTaskMap.get(inMemoryTaskManager);
+            simpleTaskMap = (Map<Integer, SimpleTask>) fieldSimpleTaskMap.get(inMemoryTaskManager);
 
             Field fieldEpicTaskMap = inMemoryTaskManager.getClass().getDeclaredField("epicTaskMap");
             fieldEpicTaskMap.setAccessible(true);
-            epicTaskMap = (HashMap<Integer, EpicTask>) fieldEpicTaskMap.get(inMemoryTaskManager);
+            epicTaskMap = (Map<Integer, EpicTask>) fieldEpicTaskMap.get(inMemoryTaskManager);
 
             Field fieldPartEpicTaskMap = inMemoryTaskManager.getClass().getDeclaredField("partEpicTaskMap");
             fieldPartEpicTaskMap.setAccessible(true);
-            partEpicTaskMap = (HashMap<Integer, PartEpicTask>) fieldPartEpicTaskMap.get(inMemoryTaskManager);
+            partEpicTaskMap = (Map<Integer, PartEpicTask>) fieldPartEpicTaskMap.get(inMemoryTaskManager);
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
@@ -290,11 +291,11 @@ class InMemoryTaskManagerTest {
         EpicTask epicTask = new EpicTask("", "");
         epicTaskMap.put(epicTask.getId(), epicTask);
 
-        ArrayList<Integer> listPartTaskId = new ArrayList<>();
+        List<Integer> listPartTaskId = new ArrayList<>();
         try{
             Field fieldEpicTask = epicTask.getClass().getDeclaredField("listPartTaskId");
             fieldEpicTask.setAccessible(true);
-            listPartTaskId = (ArrayList<Integer>) fieldEpicTask.get(epicTask);
+            listPartTaskId = (List<Integer>) fieldEpicTask.get(epicTask);
         } catch (Exception e){
             System.out.println(e.getMessage());
         }
@@ -325,11 +326,11 @@ class InMemoryTaskManagerTest {
         EpicTask epicTask = new EpicTask("", "");
         epicTaskMap.put(epicTask.getId(), epicTask);
 
-        ArrayList<Integer> listPartTaskId = new ArrayList<>();
+        List<Integer> listPartTaskId = new ArrayList<>();
         try{
             Field fieldEpicTask = epicTask.getClass().getDeclaredField("listPartTaskId");
             fieldEpicTask.setAccessible(true);
-            listPartTaskId = (ArrayList<Integer>) fieldEpicTask.get(epicTask);
+            listPartTaskId = (List<Integer>) fieldEpicTask.get(epicTask);
         } catch (Exception e){
             System.out.println(e.getMessage());
         }
@@ -354,11 +355,11 @@ class InMemoryTaskManagerTest {
         EpicTask epicTask = new EpicTask("", "");
         epicTaskMap.put(epicTask.getId(), epicTask);
 
-        ArrayList<Integer> listPartTaskId = new ArrayList<>();
+        List<Integer> listPartTaskId = new ArrayList<>();
         try{
             Field fieldEpicTask = epicTask.getClass().getDeclaredField("listPartTaskId");
             fieldEpicTask.setAccessible(true);
-            listPartTaskId = (ArrayList<Integer>) fieldEpicTask.get(epicTask);
+            listPartTaskId = (List<Integer>) fieldEpicTask.get(epicTask);
         } catch (Exception e){
             System.out.println(e.getMessage());
         }
@@ -372,12 +373,12 @@ class InMemoryTaskManagerTest {
         partEpicTaskMap.put(partEpicTask1.getId(), partEpicTask1);
         partEpicTaskMap.put(partEpicTask2.getId(), partEpicTask2);
 
-        ArrayList<PartEpicTask> example = new ArrayList<>();
+        List<PartEpicTask> example = new ArrayList<>();
         example.add(partEpicTask1);
         example.add(partEpicTask2);
 
         //When
-        ArrayList<PartEpicTask> result = inMemoryTaskManager.getListOfAllPartEpicTaskExactEpic(epicTask);
+        List<PartEpicTask> result = inMemoryTaskManager.getListOfAllPartEpicTaskExactEpic(epicTask);
 
         //Then
         Assertions.assertEquals(example, result);

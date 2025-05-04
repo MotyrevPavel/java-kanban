@@ -1,9 +1,10 @@
 package tasks;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class EpicTask extends SimpleTask{
-    private final ArrayList<Integer> listPartTaskId;
+    private final List<Integer> listPartTaskId;
 
     public EpicTask(String name, String description) {
         super(name, description);
@@ -22,7 +23,7 @@ public class EpicTask extends SimpleTask{
         listPartTaskId.clear();
     }
 
-    public ArrayList<Integer> getListPartTaskId() {
+    public List<Integer> getListPartTaskId() {
         return new ArrayList<>(listPartTaskId);
     }
     

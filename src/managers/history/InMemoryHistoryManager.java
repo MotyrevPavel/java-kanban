@@ -2,28 +2,24 @@ package managers.history;
 
 import tasks.SimpleTask;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class InMemoryHistoryManager implements HistoryManager{
-    private final SimpleTask[] viewedTasksHistory;
+    private final List<SimpleTask> viewedTasksHistory;
 
     public InMemoryHistoryManager(){
-        this.viewedTasksHistory = new SimpleTask[10];
+        this.viewedTasksHistory = new ArrayList<>();
     }
 
-    public SimpleTask[] getHistory(){
-        SimpleTask[] newViewedTasksHistory = new SimpleTask[10];
-        for (int i = 0; i < newViewedTasksHistory.length; i++) {
-            newViewedTasksHistory[i] = viewedTasksHistory[i];
-        }
-        return newViewedTasksHistory;
+    public List<SimpleTask> getHistory(){
+        return new ArrayList<>(viewedTasksHistory);
     }
 
     public void add(SimpleTask task){
-        for (int i = 0; i < viewedTasksHistory.length; i++) {
-            if (i+1 < viewedTasksHistory.length){
-                viewedTasksHistory[i] = viewedTasksHistory[i+1];
-            }else {
-                viewedTasksHistory[i] = task;
-            }
+        if (viewedTasksHistory.size() == 10){
+            viewedTasksHistory.removeFirst();
         }
+        viewedTasksHistory.add(task);
     }
 }

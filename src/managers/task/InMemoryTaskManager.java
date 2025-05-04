@@ -10,9 +10,9 @@ import tasks.TaskStatus;
 import java.util.*;
 
 public class InMemoryTaskManager implements TaskManager {
-    private final HashMap<Integer, SimpleTask> simpleTaskMap;
-    private final HashMap<Integer, EpicTask> epicTaskMap;
-    private final HashMap<Integer, PartEpicTask> partEpicTaskMap;
+    private final Map<Integer, SimpleTask> simpleTaskMap;
+    private final Map<Integer, EpicTask> epicTaskMap;
+    private final Map<Integer, PartEpicTask> partEpicTaskMap;
     private final HistoryManager historyManager;
 
 
@@ -20,21 +20,21 @@ public class InMemoryTaskManager implements TaskManager {
         this.simpleTaskMap = new HashMap<>();
         this.epicTaskMap = new HashMap<>();
         this.partEpicTaskMap = new HashMap<>();
-        historyManager = Managers.getDefaultHistory();
+        this.historyManager = Managers.getDefaultHistory();
     }
 
     @Override
-    public ArrayList<SimpleTask> getAllSimpleTask(){
+    public List<SimpleTask> getAllSimpleTask(){
         return new ArrayList<>(simpleTaskMap.values());
     }
 
     @Override
-    public ArrayList<EpicTask> getAllEpicTask(){
+    public List<EpicTask> getAllEpicTask(){
         return new ArrayList<>(epicTaskMap.values());
     }
 
     @Override
-    public ArrayList<PartEpicTask> getAllPartEpicTask(){
+    public List<PartEpicTask> getAllPartEpicTask(){
         return new ArrayList<>(partEpicTaskMap.values());
     }
 
@@ -129,7 +129,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void removeEpicTaskById(int id){
         EpicTask epicTask = epicTaskMap.get(id);
-        ArrayList<PartEpicTask> listOfAllPartEpicTaskExactEpic = this.getListOfAllPartEpicTaskExactEpic(epicTask);
+        List<PartEpicTask> listOfAllPartEpicTaskExactEpic = this.getListOfAllPartEpicTaskExactEpic(epicTask);
 
         for (PartEpicTask partEpicTask : listOfAllPartEpicTaskExactEpic) {
             int partEpicTaskId = partEpicTask.getId();
@@ -151,10 +151,10 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public ArrayList<PartEpicTask> getListOfAllPartEpicTaskExactEpic(EpicTask epicTask){
-        ArrayList<PartEpicTask> listOfAllPartEpicTaskExactEpic = new ArrayList<>();
+    public List<PartEpicTask> getListOfAllPartEpicTaskExactEpic(EpicTask epicTask){
+        List<PartEpicTask> listOfAllPartEpicTaskExactEpic = new ArrayList<>();
 
-        ArrayList<Integer> listPartTaskId = epicTask.getListPartTaskId();
+        List<Integer> listPartTaskId = epicTask.getListPartTaskId();
         for (Integer id : listPartTaskId) {
             PartEpicTask partEpicTaskExactEpic = this.getPartEpicTaskById(id);
             listOfAllPartEpicTaskExactEpic.add(partEpicTaskExactEpic);
@@ -163,12 +163,13 @@ public class InMemoryTaskManager implements TaskManager {
         return listOfAllPartEpicTaskExactEpic;
     }
 
-    public SimpleTask[] getHistory(){
+    @Override
+    public List<SimpleTask> getHistory(){
         return historyManager.getHistory();
     }
 
     private void updateEpicTaskStatus(EpicTask epicTask){
-        ArrayList<Integer> listPartTaskId = epicTask.getListPartTaskId();
+        List<Integer> listPartTaskId = epicTask.getListPartTaskId();
         boolean isAllCurrentStatusOfPartEpicTaskNew = true;
         boolean isAllCurrentStatusOfPartEpicTaskDone = true;
 

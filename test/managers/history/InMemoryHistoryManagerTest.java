@@ -6,10 +6,11 @@ import org.junit.jupiter.api.Test;
 import tasks.SimpleTask;
 
 import java.lang.reflect.Field;
+import java.util.List;
 
 class InMemoryHistoryManagerTest {
     InMemoryHistoryManager inMemoryHistoryManager;
-    SimpleTask[] viewedTasksHistory;
+    List<SimpleTask> viewedTasksHistory;
 
     @BeforeEach
     public void setUp() {
@@ -18,7 +19,7 @@ class InMemoryHistoryManagerTest {
             Field fieldViewedTasksHistory = inMemoryHistoryManager.getClass()
                     .getDeclaredField("viewedTasksHistory");
             fieldViewedTasksHistory.setAccessible(true);
-            viewedTasksHistory = (SimpleTask[]) fieldViewedTasksHistory.get(inMemoryHistoryManager);
+            viewedTasksHistory = (List<SimpleTask>) fieldViewedTasksHistory.get(inMemoryHistoryManager);
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
@@ -27,14 +28,14 @@ class InMemoryHistoryManagerTest {
     @Test
     public void shouldReturnTrueWhenTasksHistoryEqualsTaskHistoryInMemoryHistoryManager() {
         //Given
-        viewedTasksHistory[0] = new SimpleTask("test0", "test0");
-        viewedTasksHistory[1] = new SimpleTask("test1", "test1");
-        viewedTasksHistory[2] = new SimpleTask("test2", "test2");
-        viewedTasksHistory[3] = new SimpleTask("test3", "test3");
+        viewedTasksHistory.add(new SimpleTask("test0", "test0"));
+        viewedTasksHistory.add(new SimpleTask("test1", "test1"));
+        viewedTasksHistory.add(new SimpleTask("test2", "test2"));
+        viewedTasksHistory.add(new SimpleTask("test3", "test3"));
         //When
-        SimpleTask[] taskHistoryInMemoryHistoryManager = inMemoryHistoryManager.getHistory();
+        List<SimpleTask> taskHistoryInMemoryHistoryManager = inMemoryHistoryManager.getHistory();
         //Then
-        Assertions.assertArrayEquals(viewedTasksHistory, taskHistoryInMemoryHistoryManager);
+        Assertions.assertArrayEquals(viewedTasksHistory.toArray(), taskHistoryInMemoryHistoryManager.toArray());
     }
 
     @Test
@@ -46,6 +47,6 @@ class InMemoryHistoryManagerTest {
         inMemoryHistoryManager.add(simpleTask);
         inMemoryHistoryManager.add(simpleTask2);
         //Then
-        Assertions.assertEquals(viewedTasksHistory[8], simpleTask);
+        Assertions.assertEquals(viewedTasksHistory.get(1), simpleTask2);
     }
 }

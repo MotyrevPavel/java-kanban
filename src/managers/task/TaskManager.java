@@ -4,15 +4,15 @@ import tasks.EpicTask;
 import tasks.PartEpicTask;
 import tasks.SimpleTask;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public interface TaskManager {
 
-    ArrayList<SimpleTask> getAllSimpleTask();
+    List<SimpleTask> getAllSimpleTask();
 
-    ArrayList<EpicTask> getAllEpicTask();
+    List<EpicTask> getAllEpicTask();
 
-    ArrayList<PartEpicTask> getAllPartEpicTask();
+    List<PartEpicTask> getAllPartEpicTask();
 
     void removeAllSimpleTask();
 
@@ -44,7 +44,7 @@ public interface TaskManager {
 
     void removePartEpicTaskById(int id);
 
-    SimpleTask[] getHistory();
+    List<SimpleTask> getHistory();
 
-    ArrayList<PartEpicTask> getListOfAllPartEpicTaskExactEpic(EpicTask epicTask);
+    List<PartEpicTask> getListOfAllPartEpicTaskExactEpic(EpicTask epicTask);
 }

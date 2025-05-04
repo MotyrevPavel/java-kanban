@@ -7,7 +7,7 @@ public class SimpleTask {
     int id;
     private final String name;
     private final String description;
-    TaskStatus status;
+    private TaskStatus status;
 
     public SimpleTask(String name, String description) {
         this.name = name;

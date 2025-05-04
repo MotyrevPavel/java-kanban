@@ -6,14 +6,7 @@ import managers.task.InMemoryTaskManager;
 import managers.task.TaskManager;
 
 public class Managers {
-    public static TaskManager getTaskManager(Class type){
-        if(type == InMemoryTaskManager.class){
-            return new InMemoryTaskManager();
-        }
-        return getDefault();
-    }
-
-    public static TaskManager getDefault(){
+    public static TaskManager getTaskManager(){
         return new InMemoryTaskManager();
     }
 

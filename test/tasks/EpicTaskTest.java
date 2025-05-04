@@ -5,11 +5,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
+import java.util.List;
 
 class EpicTaskTest {
     EpicTask epicTask;
-    ArrayList<Integer> listPartTaskId;
+    List<Integer> listPartTaskId;
 
     @BeforeEach
     public void setUp(){
@@ -17,7 +17,7 @@ class EpicTaskTest {
         try{
             Field fieldListPartTaskId = epicTask.getClass().getDeclaredField("listPartTaskId");
             fieldListPartTaskId.setAccessible(true);
-            listPartTaskId = (ArrayList<Integer>) fieldListPartTaskId.get(epicTask);
+            listPartTaskId = (List<Integer>) fieldListPartTaskId.get(epicTask);
         }catch (Exception e){
             System.out.println(e.getMessage());
         }
@@ -68,8 +68,9 @@ class EpicTaskTest {
         listPartTaskId.add(4);
         listPartTaskId.add(5);
         //When
-        ArrayList<Integer> epicTaskListPartTaskId = epicTask.getListPartTaskId();
+        List<Integer> epicTaskListPartTaskId = epicTask.getListPartTaskId();
         //Then
+        Assertions.assertIterableEquals(listPartTaskId, epicTaskListPartTaskId);
         Assertions.assertIterableEquals(listPartTaskId, epicTaskListPartTaskId);
     }
 }
