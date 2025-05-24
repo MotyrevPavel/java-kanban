@@ -97,7 +97,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public PartEpicTask getPartEpicTaskById(int id) {
         PartEpicTask task = partEpicTaskMap.get(id);
-        try{
+        try {
             historyManager.add(task.clone());
         } catch (Exception e) {
             System.err.println(e.getMessage());
@@ -109,7 +109,7 @@ public class InMemoryTaskManager implements TaskManager {
     public void makeNewSimpleTask(SimpleTask simpleTask) {
         int taskId = simpleTask.getId();
         simpleTaskMap.put(taskId, simpleTask);
-        try{
+        try {
             historyManager.add(simpleTask.clone());
         } catch (Exception e) {
             System.err.println(e.getMessage());
@@ -120,7 +120,7 @@ public class InMemoryTaskManager implements TaskManager {
     public void makeNewEpicTask(EpicTask epicTask) {
         int taskId = epicTask.getId();
         epicTaskMap.put(taskId, epicTask);
-        try{
+        try {
             historyManager.add(epicTask.clone());
         } catch (Exception e) {
             System.err.println(e.getMessage());
@@ -139,7 +139,7 @@ public class InMemoryTaskManager implements TaskManager {
 
         partEpicTaskMap.put(taskId, partEpicTask);
         this.updateEpicTaskStatus(epicTask);
-        try{
+        try {
             historyManager.add(partEpicTask.clone());
         } catch (Exception e) {
             System.err.println(e.getMessage());
@@ -149,7 +149,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void updateSimpleTask(SimpleTask simpleTask) {
         makeNewSimpleTask(simpleTask);
-        try{
+        try {
             historyManager.add(simpleTask.clone());
         } catch (Exception e) {
             System.err.println(e.getMessage());
@@ -159,7 +159,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void updateEpicTask(EpicTask epicTask) {
         makeNewEpicTask(epicTask);
-        try{
+        try {
             historyManager.add(epicTask.clone());
         } catch (Exception e) {
             System.err.println(e.getMessage());
@@ -169,7 +169,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void updatePartEpicTask(PartEpicTask partEpicTask) {
         makeNewPartEpicTask(partEpicTask);
-        try{
+        try {
             historyManager.add(partEpicTask.clone());
         } catch (Exception e) {
             System.err.println(e.getMessage());

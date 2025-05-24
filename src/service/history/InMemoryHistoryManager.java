@@ -2,16 +2,17 @@ package service.history;
 
 import service.LinkedMap;
 import model.SimpleTask;
+
 import java.util.List;
 
-public class InMemoryHistoryManager implements HistoryManager{
+public class InMemoryHistoryManager implements HistoryManager {
     private final LinkedMap<SimpleTask> viewedTasksHistory;
 
-    public InMemoryHistoryManager(){
+    public InMemoryHistoryManager() {
         this.viewedTasksHistory = new LinkedMap<>();
     }
 
-    public List<SimpleTask> getHistory(){
+    public List<SimpleTask> getHistory() {
         return viewedTasksHistory.getAllValues();
     }
 

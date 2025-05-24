@@ -286,17 +286,17 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
-    void ShouldReturnTrueWhenRemoveEpicTaskByIdRemovedCorrectTaskAndRemovedAllConnectedPartEpicTask () {
+    void ShouldReturnTrueWhenRemoveEpicTaskByIdRemovedCorrectTaskAndRemovedAllConnectedPartEpicTask() {
         //Given
         EpicTask epicTask = new EpicTask("", "");
         epicTaskMap.put(epicTask.getId(), epicTask);
 
         List<Integer> listPartTaskId = new ArrayList<>();
-        try{
+        try {
             Field fieldEpicTask = epicTask.getClass().getDeclaredField("listPartTaskId");
             fieldEpicTask.setAccessible(true);
             listPartTaskId = (List<Integer>) fieldEpicTask.get(epicTask);
-        } catch (Exception e){
+        } catch (Exception e) {
             System.out.println(e.getMessage());
         }
 
@@ -327,11 +327,11 @@ class InMemoryTaskManagerTest {
         epicTaskMap.put(epicTask.getId(), epicTask);
 
         List<Integer> listPartTaskId = new ArrayList<>();
-        try{
+        try {
             Field fieldEpicTask = epicTask.getClass().getDeclaredField("listPartTaskId");
             fieldEpicTask.setAccessible(true);
             listPartTaskId = (List<Integer>) fieldEpicTask.get(epicTask);
-        } catch (Exception e){
+        } catch (Exception e) {
             System.out.println(e.getMessage());
         }
 
@@ -356,11 +356,11 @@ class InMemoryTaskManagerTest {
         epicTaskMap.put(epicTask.getId(), epicTask);
 
         List<Integer> listPartTaskId = new ArrayList<>();
-        try{
+        try {
             Field fieldEpicTask = epicTask.getClass().getDeclaredField("listPartTaskId");
             fieldEpicTask.setAccessible(true);
             listPartTaskId = (List<Integer>) fieldEpicTask.get(epicTask);
-        } catch (Exception e){
+        } catch (Exception e) {
             System.out.println(e.getMessage());
         }
 

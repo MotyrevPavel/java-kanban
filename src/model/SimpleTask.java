@@ -2,7 +2,7 @@ package model;
 
 import util.TaskStatus;
 
-public class SimpleTask implements Cloneable{
+public class SimpleTask implements Cloneable {
     private static int idGenerator = 0;
     private final int id;
     private final String name;

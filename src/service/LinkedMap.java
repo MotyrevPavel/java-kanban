@@ -17,8 +17,8 @@ public class LinkedMap<T> {
         this.last = null;
     }
 
-    public void add(Integer id, T value){
-        if (map.containsKey(id)){
+    public void add(Integer id, T value) {
+        if (map.containsKey(id)) {
             removeItemById(id);
         }
 
@@ -32,10 +32,10 @@ public class LinkedMap<T> {
         map.put(id, newNode);
     }
 
-    public void removeItemById(Integer id){
+    public void removeItemById(Integer id) {
         LinkedMap.Node<T> value = map.get(id);
 
-        if (value == null){
+        if (value == null) {
             return;
         }
 
@@ -60,15 +60,15 @@ public class LinkedMap<T> {
         map.remove(id);
     }
 
-    public List<T> getAllValues(){
+    public List<T> getAllValues() {
         List<T> result = new ArrayList<>();
-        for (LinkedMap.Node<T> x = first; x != null; x = x.next){
+        for (LinkedMap.Node<T> x = first; x != null; x = x.next) {
             result.add(x.item);
         }
         return result;
     }
 
-    private static class Node<T>{
+    private static class Node<T> {
         private T item;
         private Node<T> prev;
         private Node<T> next;

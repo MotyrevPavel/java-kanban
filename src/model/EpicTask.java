@@ -3,7 +3,7 @@ package model;
 import java.util.ArrayList;
 import java.util.List;
 
-public class EpicTask extends SimpleTask{
+public class EpicTask extends SimpleTask {
     private final List<Integer> listPartTaskId;
 
     public EpicTask(String name, String description) {
@@ -11,15 +11,15 @@ public class EpicTask extends SimpleTask{
         this.listPartTaskId = new ArrayList<>();
     }
 
-    public void addPartTaskId(int id){
+    public void addPartTaskId(int id) {
         listPartTaskId.add(id);
     }
 
-    public void removePartTaskById(int id){
+    public void removePartTaskById(int id) {
         listPartTaskId.remove(Integer.valueOf(id));
     }
 
-    public void removeAllPartTask(){
+    public void removeAllPartTask() {
         listPartTaskId.clear();
     }
 

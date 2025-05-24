@@ -11,7 +11,7 @@ class LinkedMapTest {
     LinkedMap<Integer> linkedMap;
 
     @BeforeEach
-    void setUp(){
+    void setUp() {
         linkedMap = new LinkedMap<>();
         linkedMap.add(0, 1);
         linkedMap.add(0, 2);

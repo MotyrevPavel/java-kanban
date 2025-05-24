@@ -12,19 +12,19 @@ class EpicTaskTest {
     List<Integer> listPartTaskId;
 
     @BeforeEach
-    public void setUp(){
+    public void setUp() {
         epicTask = new EpicTask("test", "test");
-        try{
+        try {
             Field fieldListPartTaskId = epicTask.getClass().getDeclaredField("listPartTaskId");
             fieldListPartTaskId.setAccessible(true);
             listPartTaskId = (List<Integer>) fieldListPartTaskId.get(epicTask);
-        }catch (Exception e){
+        } catch (Exception e) {
             System.out.println(e.getMessage());
         }
     }
 
     @Test
-    void ShouldReturnTrueWhenListPartTaskIdContainsAddValue(){
+    void ShouldReturnTrueWhenListPartTaskIdContainsAddValue() {
         //When
         epicTask.addPartTaskId(10);
         //Then

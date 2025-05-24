@@ -6,12 +6,12 @@ import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Field;
 
-class SimpleTaskTest{
+class SimpleTaskTest {
     static SimpleTask task1;
     static SimpleTask task2;
 
     @BeforeAll
-    public static void setUp(){
+    public static void setUp() {
         task1 = new SimpleTask("task", "task", 1);
         task2 = new SimpleTask("task", "task", 1);
     }
@@ -28,7 +28,7 @@ class SimpleTaskTest{
     void shouldReturnTrueWhenComparingHashCodeEqualObjects() {
         //When
         boolean isEqualsHashCode = false;
-        if (task1.equals(task2)){
+        if (task1.equals(task2)) {
             isEqualsHashCode = task1.hashCode() == task2.hashCode();
         }
         //Then
