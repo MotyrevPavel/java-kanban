@@ -1,6 +1,6 @@
 package model;
 
-public class PartEpicTask extends SimpleTask{
+public class PartEpicTask extends SimpleTask {
     private final int idConnectEpicTask;
 
     public PartEpicTask(String name, String description, int idConnectEpicTask) {
