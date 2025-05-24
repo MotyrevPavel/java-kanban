@@ -1,4 +1,4 @@
-package tasks;
+package model;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -6,21 +6,14 @@ import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Field;
 
-class SimpleTaskTest {
+class SimpleTaskTest{
     static SimpleTask task1;
     static SimpleTask task2;
 
     @BeforeAll
     public static void setUp(){
-        task1 = new SimpleTask("task", "task");
-        task2 = new SimpleTask("task", "task");
-        try{
-            Field fieldIdTask2 = task2.getClass().getDeclaredField("id");
-            fieldIdTask2.setAccessible(true);
-            fieldIdTask2.set(task2, 0);
-        }catch (Exception e){
-            System.out.println(e.getMessage());
-        }
+        task1 = new SimpleTask("task", "task", 1);
+        task2 = new SimpleTask("task", "task", 1);
     }
 
     @Test

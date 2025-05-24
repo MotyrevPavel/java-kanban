@@ -1,4 +1,4 @@
-package tasks;
+package model;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,5 +26,19 @@ public class EpicTask extends SimpleTask{
     public List<Integer> getListPartTaskId() {
         return new ArrayList<>(listPartTaskId);
     }
-    
+
+    @Override
+    public EpicTask clone() throws CloneNotSupportedException {
+        return (EpicTask) super.clone();
+    }
+
+    @Override
+    public String toString() {
+        return "EpicTask{" +
+                "id=" + super.getId() +
+                ", name='" + super.getName() + '\'' +
+                ", description='" + super.getDescription() + '\'' +
+                ", status=" + super.getStatus() +
+                '}' + System.lineSeparator();
+    }
 }

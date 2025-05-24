@@ -1,9 +1,9 @@
-package managers;
+package util;
 
-import managers.history.HistoryManager;
-import managers.history.InMemoryHistoryManager;
-import managers.task.InMemoryTaskManager;
-import managers.task.TaskManager;
+import service.history.HistoryManager;
+import service.history.InMemoryHistoryManager;
+import service.task.InMemoryTaskManager;
+import service.task.TaskManager;
 
 public class Managers {
     public static TaskManager getTaskManager(){

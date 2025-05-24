@@ -1,11 +1,11 @@
-package managers.task;
+package service.task;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import tasks.EpicTask;
-import tasks.PartEpicTask;
-import tasks.SimpleTask;
+import model.EpicTask;
+import model.PartEpicTask;
+import model.SimpleTask;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -155,7 +155,7 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
-    void shouldReturnTrueWhenGetSimpleTaskByIdReturnCorrectValue() {
+    void shouldReturnTrueWhenGetSimpleTaskByIdReturnCorrectValue() throws CloneNotSupportedException {
         //Given
         SimpleTask simpleTaskExample = new SimpleTask("", "");
         SimpleTask simpleTask2 = new SimpleTask("", "");
@@ -170,7 +170,7 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
-    void shouldReturnTrueWhenGetEpicTaskByIdReturnCorrectValue() {
+    void shouldReturnTrueWhenGetEpicTaskByIdReturnCorrectValue() throws CloneNotSupportedException {
         //Given
         EpicTask epicTaskExample = new EpicTask("", "");
         EpicTask epicTask2 = new EpicTask("", "");
@@ -186,7 +186,7 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
-    void shouldReturnTrueWhenGetPartEpicTaskByIdReturnCorrectValue() {
+    void shouldReturnTrueWhenGetPartEpicTaskByIdReturnCorrectValue() throws CloneNotSupportedException {
         //Given
         EpicTask epicTask = new EpicTask("", "");
         PartEpicTask partEpicTaskExample = new PartEpicTask("", "", epicTask.getId());

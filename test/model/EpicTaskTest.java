@@ -1,4 +1,4 @@
-package tasks;
+package model;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,7 +24,7 @@ class EpicTaskTest {
     }
 
     @Test
-    void shouldReturnTrueWhenCheckedIfAddedValueContainsInListPartTaskId(){
+    void ShouldReturnTrueWhenListPartTaskIdContainsAddValue(){
         //When
         epicTask.addPartTaskId(10);
         //Then
