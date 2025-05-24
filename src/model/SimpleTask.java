@@ -1,10 +1,10 @@
-package tasks;
+package model;
 
-import java.util.Objects;
+import util.TaskStatus;
 
-public class SimpleTask {
+public class SimpleTask implements Cloneable {
     private static int idGenerator = 0;
-    int id;
+    private final int id;
     private final String name;
     private final String description;
     private TaskStatus status;
@@ -17,18 +17,10 @@ public class SimpleTask {
         idGenerator++;
     }
 
-    public SimpleTask(String name, String description, TaskStatus status) {
+    public SimpleTask(String name, String description, int id) {
         this.name = name;
         this.description = description;
-        this.status = status;
-        id = idGenerator;
-        idGenerator++;
-    }
-
-    public SimpleTask(String name, String description, TaskStatus status, int id) {
-        this.name = name;
-        this.description = description;
-        this.status = status;
+        status = TaskStatus.NEW;
         this.id = id;
     }
 
@@ -36,12 +28,25 @@ public class SimpleTask {
         return id;
     }
 
+    public TaskStatus getStatus() {
+        return status;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
     public void setStatus(TaskStatus status) {
         this.status = status;
     }
 
-    public TaskStatus getStatus() {
-        return status;
+    @Override
+    public SimpleTask clone() throws CloneNotSupportedException {
+        return (SimpleTask) super.clone();
     }
 
     @Override
@@ -49,15 +54,12 @@ public class SimpleTask {
         if (o == null || getClass() != o.getClass()) return false;
 
         SimpleTask that = (SimpleTask) o;
-        return id == that.id && Objects.equals(name, that.name) && Objects.equals(description, that.description);
+        return id == that.id;
     }
 
     @Override
     public int hashCode() {
-        int result = id;
-        result = 31 * result + Objects.hashCode(name);
-        result = 31 * result + Objects.hashCode(description);
-        return result;
+        return id;
     }
 
     @Override
@@ -67,6 +69,6 @@ public class SimpleTask {
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", status=" + status +
-                '}';
+                '}' + System.lineSeparator();
     }
 }

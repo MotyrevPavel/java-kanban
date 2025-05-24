@@ -1,8 +1,8 @@
-package managers.task;
+package service.task;
 
-import tasks.EpicTask;
-import tasks.PartEpicTask;
-import tasks.SimpleTask;
+import model.EpicTask;
+import model.PartEpicTask;
+import model.SimpleTask;
 
 import java.util.List;
 
