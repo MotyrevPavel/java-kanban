@@ -7,6 +7,7 @@ import model.EpicTask;
 import model.PartEpicTask;
 import model.SimpleTask;
 
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +20,7 @@ class InMemoryTaskManagerTest {
     InMemoryTaskManager inMemoryTaskManager;
 
     @BeforeEach
-    public void setUp() {
+    public void setUp() throws IOException {
         inMemoryTaskManager = new InMemoryTaskManager();
         try {
             Field fieldSimpleTaskMap = inMemoryTaskManager.getClass().getDeclaredField("simpleTaskMap");

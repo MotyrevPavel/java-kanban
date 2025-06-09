@@ -10,10 +10,10 @@ import util.TaskStatus;
 import java.util.*;
 
 public class InMemoryTaskManager implements TaskManager {
-    private final Map<Integer, SimpleTask> simpleTaskMap;
-    private final Map<Integer, EpicTask> epicTaskMap;
-    private final Map<Integer, PartEpicTask> partEpicTaskMap;
-    private final HistoryManager historyManager;
+    protected final Map<Integer, SimpleTask> simpleTaskMap;
+    protected final Map<Integer, EpicTask> epicTaskMap;
+    protected final Map<Integer, PartEpicTask> partEpicTaskMap;
+    protected final HistoryManager historyManager;
 
 
     public InMemoryTaskManager() {

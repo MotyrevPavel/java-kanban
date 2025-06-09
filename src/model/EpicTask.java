@@ -1,5 +1,8 @@
 package model;
 
+import util.TaskStatus;
+import util.TaskType;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,6 +11,11 @@ public class EpicTask extends SimpleTask {
 
     public EpicTask(String name, String description) {
         super(name, description);
+        this.listPartTaskId = new ArrayList<>();
+    }
+
+    public EpicTask(int id, String name, TaskStatus status, String description) {
+        super(id, name, status, description);
         this.listPartTaskId = new ArrayList<>();
     }
 
@@ -34,11 +42,11 @@ public class EpicTask extends SimpleTask {
 
     @Override
     public String toString() {
-        return "EpicTask{" +
-                "id=" + super.getId() +
-                ", name='" + super.getName() + '\'' +
-                ", description='" + super.getDescription() + '\'' +
-                ", status=" + super.getStatus() +
-                '}' + System.lineSeparator();
+        return super.getId() +
+                "," + TaskType.EPIC +
+                "," + super.getName() +
+                "," + super.getStatus() +
+                "," + super.getDescription() +
+                ',' + super.getName();
     }
 }

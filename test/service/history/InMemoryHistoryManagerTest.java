@@ -41,8 +41,8 @@ class InMemoryHistoryManagerTest {
 
     @Test
     public void shouldReturnTrueWhenTaskRemovedFromViewedTasksHistory() {
-        viewedTasksHistory.add(0, new SimpleTask("test0", "test0", 0));
-        viewedTasksHistory.add(1, new SimpleTask("test1", "test1", 1));
+        viewedTasksHistory.add(0, new SimpleTask(0, "test0", "test0"));
+        viewedTasksHistory.add(1, new SimpleTask(1, "test1", "test1"));
         //When
         inMemoryHistoryManager.remove(0);
         inMemoryHistoryManager.remove(1);
@@ -52,8 +52,8 @@ class InMemoryHistoryManagerTest {
 
     @Test
     public void shouldReturnTrueWhenReturnCorrectHistory() {
-        viewedTasksHistory.add(0, new SimpleTask("test0", "test0", 0));
-        viewedTasksHistory.add(1, new SimpleTask("test1", "test1", 1));
+        viewedTasksHistory.add(0, new SimpleTask(0, "test0", "test0"));
+        viewedTasksHistory.add(1, new SimpleTask(1, "test1", "test1"));
         //When
         List<SimpleTask> listSimpleTask = inMemoryHistoryManager.getHistory();
         //Then

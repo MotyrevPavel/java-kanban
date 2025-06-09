@@ -1,10 +1,18 @@
 package model;
 
+import util.TaskStatus;
+import util.TaskType;
+
 public class PartEpicTask extends SimpleTask {
     private final int idConnectEpicTask;
 
     public PartEpicTask(String name, String description, int idConnectEpicTask) {
         super(name, description);
+        this.idConnectEpicTask = idConnectEpicTask;
+    }
+
+    public PartEpicTask(int id, String name, TaskStatus status, String description, int idConnectEpicTask) {
+        super(id, name, status, description);
         this.idConnectEpicTask = idConnectEpicTask;
     }
 
@@ -19,11 +27,11 @@ public class PartEpicTask extends SimpleTask {
 
     @Override
     public String toString() {
-        return "PartEpicTask{" +
-                "id=" + super.getId() +
-                ", name='" + super.getName() + '\'' +
-                ", description='" + super.getDescription() + '\'' +
-                ", status=" + super.getStatus() +
-                '}' + System.lineSeparator();
+        return super.getId() +
+                "," + TaskType.PARTEPIC +
+                "," + super.getName() +
+                "," + super.getStatus() +
+                "," + super.getDescription() +
+                ',' + idConnectEpicTask;
     }
 }
