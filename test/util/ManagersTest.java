@@ -1,7 +1,7 @@
-package managers;
+package util;
 
-import managers.history.HistoryManager;
-import managers.task.TaskManager;
+import service.history.HistoryManager;
+import service.task.TaskManager;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

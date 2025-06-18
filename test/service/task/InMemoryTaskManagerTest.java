@@ -1,11 +1,11 @@
-package managers.task;
+package service.task;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import tasks.EpicTask;
-import tasks.PartEpicTask;
-import tasks.SimpleTask;
+import model.EpicTask;
+import model.PartEpicTask;
+import model.SimpleTask;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -155,7 +155,7 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
-    void shouldReturnTrueWhenGetSimpleTaskByIdReturnCorrectValue() {
+    void shouldReturnTrueWhenGetSimpleTaskByIdReturnCorrectValue() throws CloneNotSupportedException {
         //Given
         SimpleTask simpleTaskExample = new SimpleTask("", "");
         SimpleTask simpleTask2 = new SimpleTask("", "");
@@ -170,7 +170,7 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
-    void shouldReturnTrueWhenGetEpicTaskByIdReturnCorrectValue() {
+    void shouldReturnTrueWhenGetEpicTaskByIdReturnCorrectValue() throws CloneNotSupportedException {
         //Given
         EpicTask epicTaskExample = new EpicTask("", "");
         EpicTask epicTask2 = new EpicTask("", "");
@@ -186,7 +186,7 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
-    void shouldReturnTrueWhenGetPartEpicTaskByIdReturnCorrectValue() {
+    void shouldReturnTrueWhenGetPartEpicTaskByIdReturnCorrectValue() throws CloneNotSupportedException {
         //Given
         EpicTask epicTask = new EpicTask("", "");
         PartEpicTask partEpicTaskExample = new PartEpicTask("", "", epicTask.getId());
@@ -286,17 +286,17 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
-    void ShouldReturnTrueWhenRemoveEpicTaskByIdRemovedCorrectTaskAndRemovedAllConnectedPartEpicTask () {
+    void ShouldReturnTrueWhenRemoveEpicTaskByIdRemovedCorrectTaskAndRemovedAllConnectedPartEpicTask() {
         //Given
         EpicTask epicTask = new EpicTask("", "");
         epicTaskMap.put(epicTask.getId(), epicTask);
 
         List<Integer> listPartTaskId = new ArrayList<>();
-        try{
+        try {
             Field fieldEpicTask = epicTask.getClass().getDeclaredField("listPartTaskId");
             fieldEpicTask.setAccessible(true);
             listPartTaskId = (List<Integer>) fieldEpicTask.get(epicTask);
-        } catch (Exception e){
+        } catch (Exception e) {
             System.out.println(e.getMessage());
         }
 
@@ -327,11 +327,11 @@ class InMemoryTaskManagerTest {
         epicTaskMap.put(epicTask.getId(), epicTask);
 
         List<Integer> listPartTaskId = new ArrayList<>();
-        try{
+        try {
             Field fieldEpicTask = epicTask.getClass().getDeclaredField("listPartTaskId");
             fieldEpicTask.setAccessible(true);
             listPartTaskId = (List<Integer>) fieldEpicTask.get(epicTask);
-        } catch (Exception e){
+        } catch (Exception e) {
             System.out.println(e.getMessage());
         }
 
@@ -356,11 +356,11 @@ class InMemoryTaskManagerTest {
         epicTaskMap.put(epicTask.getId(), epicTask);
 
         List<Integer> listPartTaskId = new ArrayList<>();
-        try{
+        try {
             Field fieldEpicTask = epicTask.getClass().getDeclaredField("listPartTaskId");
             fieldEpicTask.setAccessible(true);
             listPartTaskId = (List<Integer>) fieldEpicTask.get(epicTask);
-        } catch (Exception e){
+        } catch (Exception e) {
             System.out.println(e.getMessage());
         }
 
