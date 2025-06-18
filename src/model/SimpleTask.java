@@ -1,6 +1,7 @@
 package model;
 
 import util.TaskStatus;
+import util.TaskType;
 
 public class SimpleTask implements Cloneable {
     private static int idGenerator = 0;
@@ -17,11 +18,18 @@ public class SimpleTask implements Cloneable {
         idGenerator++;
     }
 
-    public SimpleTask(String name, String description, int id) {
+    public SimpleTask(int id, String name, String description) {
         this.name = name;
         this.description = description;
         status = TaskStatus.NEW;
         this.id = id;
+    }
+
+    public SimpleTask(int id, String name, TaskStatus status, String description) {
+        this.id = id;
+        this.name = name;
+        this.status = status;
+        this.description = description;
     }
 
     public int getId() {
@@ -64,11 +72,11 @@ public class SimpleTask implements Cloneable {
 
     @Override
     public String toString() {
-        return "SimpleTask{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", description='" + description + '\'' +
-                ", status=" + status +
-                '}' + System.lineSeparator();
+        return id +
+                "," + TaskType.SIMPLE +
+                "," + name +
+                "," + status +
+                "," + description +
+                ',' + name;
     }
 }

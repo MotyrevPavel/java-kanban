@@ -12,8 +12,8 @@ class SimpleTaskTest {
 
     @BeforeAll
     public static void setUp() {
-        task1 = new SimpleTask("task", "task", 1);
-        task2 = new SimpleTask("task", "task", 1);
+        task1 = new SimpleTask(1, "task", "task");
+        task2 = new SimpleTask(1, "task", "task");
     }
 
     @Test
