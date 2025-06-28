@@ -1,8 +1,11 @@
 package service.task;
 
+import exceptions.ManagerLoadException;
+import exceptions.ManagerSaveException;
 import model.EpicTask;
 import model.PartEpicTask;
 import model.SimpleTask;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -37,7 +40,7 @@ class FileBackedTaskManagerTest extends InMemoryTaskManagerTest {
         fileBackedTaskManager.save();
 
         //Then
-        assertEquals("id,type,name,status,description,epic", reader.readLine());
+        assertEquals("id,type,name,status,description,epic,startTime,duration", reader.readLine());
         assertEquals(simpleTask.toString(), reader.readLine());
         assertEquals(epicTask.toString(), reader.readLine());
         assertEquals(partEpicTask.toString(), reader.readLine());
@@ -48,10 +51,10 @@ class FileBackedTaskManagerTest extends InMemoryTaskManagerTest {
     @Test
     void shouldReturnTrueWhenCorrectLoadFromFile() throws IOException {
         //Given
-        String title = "id,type,name,status,description,epic";
-        String simleTask = "1,SIMPLE,SimpleTask,DONE,simple,SimpleTask";
-        String epic = "2,EPIC,epic,NEW,epic,epic";
-        String partEpicTask = "3,PARTEPIC,partEpicTask,IN_PROGRESS,partEpicTask,2";
+        String title = "id,type,name,status,description,epic,startTime,duration";
+        String simleTask = "1,SIMPLE,SimpleTask,DONE,simple,SimpleTask,null,null";
+        String epic = "2,EPIC,epic,NEW,epic,epic,null,null";
+        String partEpicTask = "3,PARTEPIC,partEpicTask,IN_PROGRESS,partEpicTask,2,null,null";
         BufferedWriter writer = new BufferedWriter(new FileWriter(tempFile, StandardCharsets.UTF_8));
         writer.write(title);
         writer.newLine();
@@ -70,4 +73,26 @@ class FileBackedTaskManagerTest extends InMemoryTaskManagerTest {
         assertEquals(epic, fileBackedTaskManager.epicTaskMap.get(2).toString());
         assertEquals(partEpicTask, fileBackedTaskManager.partEpicTaskMap.get(3).toString());
     }
+
+    @Test
+    void shouldReturnTrueWhenTrowManagerSaveException() {
+        //Given
+        tempFile.setWritable(false);
+        //Then
+        Assertions.assertThrows(ManagerSaveException.class, () -> {
+            fileBackedTaskManager.save();
+        }, "");
+    }
+
+    @Test
+    void shouldReturnTrueWhenTrowManagerLoadException() {
+        //Given
+        tempFile.setReadable(false);
+        //Then
+        Assertions.assertThrows(ManagerLoadException.class, () -> {
+            fileBackedTaskManager.loadFromFile(tempFile);
+        }, "");
+    }
+
+
 }
