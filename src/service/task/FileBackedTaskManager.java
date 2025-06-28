@@ -12,11 +12,16 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 public class FileBackedTaskManager extends InMemoryTaskManager implements TaskManager {
     //При изменении заголовка таблицы, нужно проверить метод fromString, т.к. массив
     //этого метода жестко привязан к порядку элементов заголовка таблицы
-    private final String tableTitle = "id,type,name,status,description,epic";
+    //Поле endTime в EpicTask - рассчитывается при загрузке данных из файла и не учавствует в серриализации
+    private final String tableTitle = "id,type,name,status,description,epic,startTime,duration";
     private final File file;
 
     public FileBackedTaskManager(File file) {
@@ -54,14 +59,16 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
             while (reader.ready()) {
                 String value = reader.readLine();
                 SimpleTask task = fromString(value);
-                if (task instanceof PartEpicTask) {
-                    partEpicTaskMap.put(task.getId(), (PartEpicTask) task);
-                } else if (task instanceof EpicTask) {
-                    epicTaskMap.put(task.getId(), (EpicTask) task);
+                if (task instanceof PartEpicTask partEpicTask) {
+                    partEpicTaskMap.put(partEpicTask.getId(), partEpicTask);
+                } else if (task instanceof EpicTask epicTask) {
+                    epicTaskMap.put(epicTask.getId(), epicTask);
                 } else {
                     simpleTaskMap.put(task.getId(), task);
                 }
             }
+            loadPartEpicTaskToEpic();
+            loadPrioritizeTask();
         } catch (IOException e) {
             throw new ManagerLoadException();
         }
@@ -122,19 +129,19 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
     }
 
     @Override
-    public void removeSimpleTaskById(int id) {
+    public void removeSimpleTaskById(Integer id) {
         super.removeSimpleTaskById(id);
         save();
     }
 
     @Override
-    public void removeEpicTaskById(int id) {
+    public void removeEpicTaskById(Integer id) {
         super.removeEpicTaskById(id);
         save();
     }
 
     @Override
-    public void removePartEpicTaskById(int id) {
+    public void removePartEpicTaskById(Integer id) {
         super.removePartEpicTaskById(id);
         save();
     }
@@ -151,7 +158,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
     }
 
     private SimpleTask fromString(String value) {
-        //Порядок данных в массиве "id,type,name,status,description,idConnectEpicTask";
+        //Порядок данных в массиве "id,type,name,status,description,idConnectEpicTask,startTime,duration";
         String[] taskParams = value.split(",");
         int id = Integer.parseInt(taskParams[0]);
         TaskType type = TaskType.valueOf(taskParams[1]);
@@ -159,13 +166,50 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
         TaskStatus status = TaskStatus.valueOf(taskParams[3]);
         String description = taskParams[4];
         int idConnectEpicTask = type == TaskType.PARTEPIC ? Integer.parseInt(taskParams[5]) : -1;
+        LocalDateTime startTime;
+        Duration duration;
+
+        if (taskParams[6].equals("null")) {
+            startTime = null;
+        } else {
+            startTime = LocalDateTime.parse(taskParams[6], DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"));
+        }
+        if (taskParams[7].equals("null")) {
+            duration = null;
+        } else {
+            duration = Duration.ofMinutes(Integer.parseInt(taskParams[7]));
+        }
 
         if (type == TaskType.SIMPLE) {
-            return new SimpleTask(id, name, status, description);
+            return new SimpleTask(id, name, description, status, startTime, duration);
         } else if (type == TaskType.EPIC) {
-            return new EpicTask(id, name, status, description);
+            return new EpicTask(id, name, description, status, startTime, duration);
         } else {
-            return new PartEpicTask(id, name, status, description, idConnectEpicTask);
+            return new PartEpicTask(id, name, description, status, startTime, duration, idConnectEpicTask);
         }
+    }
+
+    private void loadPartEpicTaskToEpic() {
+        for (PartEpicTask task : partEpicTaskMap.values()) {
+            Integer idEpic = task.getIdConnectEpicTask();
+            EpicTask epicTask = epicTaskMap.get(idEpic);
+            List<Integer> listPartTaskId = epicTask.getListPartTaskId();
+            listPartTaskId.add(task.getId());
+            EpicTask updateEpic = new EpicTask(
+                    epicTask.getId(),
+                    epicTask.getName(),
+                    epicTask.getDescription(),
+                    epicTask.getStatus(),
+                    epicTask.getStartTime().orElse(null),
+                    epicTask.getDuration().orElse(null),
+                    epicTask.getEndTime().orElse(null),
+                    listPartTaskId);
+            epicTaskMap.put(idEpic, updateEpic);
+        }
+    }
+
+    private void loadPrioritizeTask() {
+        partEpicTaskMap.values().forEach(this::checkPriority);
+        simpleTaskMap.values().forEach(this::checkPriority);
     }
 }

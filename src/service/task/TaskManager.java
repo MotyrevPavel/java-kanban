@@ -5,6 +5,7 @@ import model.PartEpicTask;
 import model.SimpleTask;
 
 import java.util.List;
+import java.util.Set;
 
 public interface TaskManager {
 
@@ -20,11 +21,11 @@ public interface TaskManager {
 
     void removeAllPartEpicTask();
 
-    SimpleTask getSimpleTaskById(int id);
+    SimpleTask getSimpleTaskById(Integer id);
 
-    EpicTask getEpicTaskById(int id);
+    EpicTask getEpicTaskById(Integer id);
 
-    PartEpicTask getPartEpicTaskById(int id);
+    PartEpicTask getPartEpicTaskById(Integer id);
 
     void makeNewSimpleTask(SimpleTask simpleTask);
 
@@ -38,13 +39,17 @@ public interface TaskManager {
 
     void updatePartEpicTask(PartEpicTask partEpicTask);
 
-    void removeSimpleTaskById(int id);
+    void removeSimpleTaskById(Integer id);
 
-    void removeEpicTaskById(int id);
+    void removeEpicTaskById(Integer id);
 
-    void removePartEpicTaskById(int id);
+    void removePartEpicTaskById(Integer id);
 
     List<SimpleTask> getHistory();
 
-    List<PartEpicTask> getListOfAllPartEpicTaskExactEpic(EpicTask epicTask);
+    List<PartEpicTask> getEpicSubtasks(EpicTask epicTask);
+
+    Set<SimpleTask> getPrioritizedTasks();
+
+    boolean validateScheduleConflict(SimpleTask firstTask, SimpleTask secondTask);
 }

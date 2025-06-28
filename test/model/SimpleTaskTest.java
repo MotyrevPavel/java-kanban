@@ -3,6 +3,7 @@ package model;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import util.TaskStatus;
 
 import java.lang.reflect.Field;
 
@@ -12,8 +13,8 @@ class SimpleTaskTest {
 
     @BeforeAll
     public static void setUp() {
-        task1 = new SimpleTask(1, "task", "task");
-        task2 = new SimpleTask(1, "task", "task");
+        task1 = new SimpleTask(1, "task", "task", TaskStatus.NEW, null, null);
+        task2 = new SimpleTask(1, "task", "task", TaskStatus.NEW, null, null);
     }
 
     @Test

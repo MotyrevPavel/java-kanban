@@ -1,17 +1,19 @@
 package service.task;
 
+import exceptions.ScheduleConflictException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import model.EpicTask;
 import model.PartEpicTask;
 import model.SimpleTask;
+import util.TaskStatus;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.util.*;
 
 class InMemoryTaskManagerTest {
     private Map<Integer, SimpleTask> simpleTaskMap;
@@ -326,20 +328,7 @@ class InMemoryTaskManagerTest {
         //Given
         EpicTask epicTask = new EpicTask("", "");
         epicTaskMap.put(epicTask.getId(), epicTask);
-
-        List<Integer> listPartTaskId = new ArrayList<>();
-        try {
-            Field fieldEpicTask = epicTask.getClass().getDeclaredField("listPartTaskId");
-            fieldEpicTask.setAccessible(true);
-            listPartTaskId = (List<Integer>) fieldEpicTask.get(epicTask);
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
-
         PartEpicTask partEpicTask = new PartEpicTask("", "", epicTask.getId());
-
-        listPartTaskId.add(partEpicTask.getId());
-
         partEpicTaskMap.put(partEpicTask.getId(), partEpicTask);
 
         //When
@@ -347,7 +336,7 @@ class InMemoryTaskManagerTest {
 
         //Then
         Assertions.assertTrue(partEpicTaskMap.isEmpty());
-        Assertions.assertTrue(listPartTaskId.isEmpty());
+        Assertions.assertTrue(epicTaskMap.get(epicTask.getId()).getListPartTaskId().isEmpty());
     }
 
     @Test
@@ -379,9 +368,190 @@ class InMemoryTaskManagerTest {
         example.add(partEpicTask2);
 
         //When
-        List<PartEpicTask> result = inMemoryTaskManager.getListOfAllPartEpicTaskExactEpic(epicTask);
+        List<PartEpicTask> result = inMemoryTaskManager.getEpicSubtasks(epicTask);
 
         //Then
         Assertions.assertEquals(example, result);
+    }
+
+    @Test
+    void ShouldReturnTrueWhenEpicTaskHasStatusNew() {
+        //Given
+        EpicTask epicTask = new EpicTask("", "");
+        PartEpicTask partEpicTask1 = new PartEpicTask("", "", epicTask.getId());
+        PartEpicTask partEpicTask2 = new PartEpicTask("", "", epicTask.getId());
+        PartEpicTask partEpicTask3 = new PartEpicTask("", "", epicTask.getId());
+
+        //When
+        inMemoryTaskManager.makeNewEpicTask(epicTask);
+        inMemoryTaskManager.makeNewPartEpicTask(partEpicTask1);
+        inMemoryTaskManager.makeNewPartEpicTask(partEpicTask2);
+        inMemoryTaskManager.makeNewPartEpicTask(partEpicTask3);
+
+        //Then
+        Assertions.assertEquals(TaskStatus.NEW, inMemoryTaskManager.getEpicTaskById(epicTask.getId()).getStatus());
+    }
+
+    @Test
+    void ShouldReturnTrueWhenEpicTaskHasStatusDone() {
+        //Given
+        EpicTask epicTask = new EpicTask("", "");
+        PartEpicTask subTask1 = new PartEpicTask(2001, "subTask1", "subTask1",
+                TaskStatus.DONE, null, null, epicTask.getId());
+        PartEpicTask subTask2 = new PartEpicTask(2002, "subTask2", "subTask2",
+                TaskStatus.DONE, null, null, epicTask.getId());
+        PartEpicTask subTask3 = new PartEpicTask(2003, "subTask3", "subTask3",
+                TaskStatus.DONE, null, null, epicTask.getId());
+
+        //When
+        inMemoryTaskManager.makeNewEpicTask(epicTask);
+        inMemoryTaskManager.makeNewPartEpicTask(subTask1);
+        inMemoryTaskManager.makeNewPartEpicTask(subTask2);
+        inMemoryTaskManager.makeNewPartEpicTask(subTask3);
+
+        //Then
+        Assertions.assertEquals(TaskStatus.DONE, inMemoryTaskManager.getEpicTaskById(epicTask.getId()).getStatus());
+    }
+
+    @Test
+    void ShouldReturnTrueWhenEpicTaskHasStatusInProgress() {
+        //Given
+        EpicTask epicTask = new EpicTask("", "");
+        PartEpicTask subTask1 = new PartEpicTask(2001, "subTask1", "subTask1",
+                TaskStatus.NEW, null, null, epicTask.getId());
+        PartEpicTask subTask2 = new PartEpicTask(2002, "subTask2", "subTask2",
+                TaskStatus.DONE, null, null, epicTask.getId());
+        PartEpicTask subTask3 = new PartEpicTask(2003, "subTask3", "subTask3",
+                TaskStatus.DONE, null, null, epicTask.getId());
+
+        //When
+        inMemoryTaskManager.makeNewEpicTask(epicTask);
+        inMemoryTaskManager.makeNewPartEpicTask(subTask1);
+        inMemoryTaskManager.makeNewPartEpicTask(subTask2);
+        inMemoryTaskManager.makeNewPartEpicTask(subTask3);
+
+        //Then
+        Assertions.assertEquals(TaskStatus.IN_PROGRESS, inMemoryTaskManager.getEpicTaskById(epicTask.getId()).getStatus());
+    }
+
+    @Test
+    void ShouldReturnTrueWhenEpicTaskHasStatusInProgressAndAllSubTaskInProgress() {
+        //Given
+        EpicTask epicTask = new EpicTask("", "");
+        PartEpicTask subTask1 = new PartEpicTask(2001, "subTask1", "subTask1",
+                TaskStatus.IN_PROGRESS, null, null, epicTask.getId());
+        PartEpicTask subTask2 = new PartEpicTask(2002, "subTask2", "subTask2",
+                TaskStatus.IN_PROGRESS, null, null, epicTask.getId());
+        PartEpicTask subTask3 = new PartEpicTask(2003, "subTask3", "subTask3",
+                TaskStatus.IN_PROGRESS, null, null, epicTask.getId());
+
+        //When
+        inMemoryTaskManager.makeNewEpicTask(epicTask);
+        inMemoryTaskManager.makeNewPartEpicTask(subTask1);
+        inMemoryTaskManager.makeNewPartEpicTask(subTask2);
+        inMemoryTaskManager.makeNewPartEpicTask(subTask3);
+
+        //Then
+        Assertions.assertEquals(TaskStatus.IN_PROGRESS, inMemoryTaskManager.getEpicTaskById(epicTask.getId()).getStatus());
+    }
+
+    @Test
+    void ShouldReturnTrueWhenEpicTaskHasEndTimeIsSumOfDurationAllSubTask() {
+        //Given
+        LocalDateTime ldt = LocalDateTime.now();
+        Duration duration = Duration.ofMinutes(100);
+        EpicTask epicTask = new EpicTask("", "");
+        PartEpicTask subTask1 = new PartEpicTask(2001, "subTask1", "subTask1",
+                TaskStatus.IN_PROGRESS, ldt, duration, epicTask.getId());
+        PartEpicTask subTask2 = new PartEpicTask(2002, "subTask2", "subTask2",
+                TaskStatus.IN_PROGRESS, ldt.plusMinutes(duration.toMinutes()), duration, epicTask.getId());
+        PartEpicTask subTask3 = new PartEpicTask(2003, "subTask3", "subTask3",
+                TaskStatus.IN_PROGRESS, ldt.plusMinutes(duration.toMinutes() * 2), duration, epicTask.getId());
+
+        //When
+        inMemoryTaskManager.makeNewEpicTask(epicTask);
+        inMemoryTaskManager.makeNewPartEpicTask(subTask1);
+        inMemoryTaskManager.makeNewPartEpicTask(subTask2);
+        inMemoryTaskManager.makeNewPartEpicTask(subTask3);
+
+        //Then
+        Assertions.assertEquals(ldt.plusMinutes(duration.toMinutes() * 3),
+                inMemoryTaskManager.getEpicTaskById(epicTask.getId()).getEndTime().get());
+    }
+
+    @Test
+    void ShouldReturnTrueWhenEpicTaskHasCorrectEndTime() {
+        //Given
+        LocalDateTime ldt = LocalDateTime.now();
+        Duration duration = Duration.ofMinutes(100);
+        EpicTask epicTask = new EpicTask("", "");
+        PartEpicTask subTask1 = new PartEpicTask(2001, "subTask1", "subTask1",
+                TaskStatus.IN_PROGRESS, ldt, duration, epicTask.getId());
+        PartEpicTask subTask2 = new PartEpicTask(2002, "subTask2", "subTask2",
+                TaskStatus.IN_PROGRESS, null, null, epicTask.getId());
+        PartEpicTask subTask3 = new PartEpicTask(2003, "subTask3", "subTask3",
+                TaskStatus.IN_PROGRESS, ldt.plusMinutes(duration.toMinutes()), duration, epicTask.getId());
+
+        //When
+        inMemoryTaskManager.makeNewEpicTask(epicTask);
+        inMemoryTaskManager.makeNewPartEpicTask(subTask1);
+        inMemoryTaskManager.makeNewPartEpicTask(subTask2);
+        inMemoryTaskManager.makeNewPartEpicTask(subTask3);
+
+        //Then
+        Assertions.assertEquals(ldt.plusMinutes(duration.toMinutes() * 2),
+                inMemoryTaskManager.getEpicTaskById(epicTask.getId()).getEndTime().get());
+    }
+
+    @Test
+    void ShouldThrowScheduleConflictExceptionWhenTasksOverlapInTime() {
+        //Given
+        LocalDateTime ldt = LocalDateTime.now();
+        Duration duration = Duration.ofMinutes(100);
+        EpicTask epicTask = new EpicTask("", "");
+        PartEpicTask subTask1 = new PartEpicTask(2001, "subTask1", "subTask1",
+                TaskStatus.NEW, ldt, duration, epicTask.getId());
+        PartEpicTask subTask2 = new PartEpicTask(2002, "subTask2", "subTask2",
+                TaskStatus.NEW, ldt.plusMinutes(duration.toMinutes()), duration, epicTask.getId());
+        PartEpicTask subTask3 = new PartEpicTask(2003, "subTask3", "subTask3",
+                TaskStatus.NEW, ldt.plusMinutes(duration.toMinutes()), duration, epicTask.getId());
+
+        //When
+        inMemoryTaskManager.makeNewEpicTask(epicTask);
+        inMemoryTaskManager.makeNewPartEpicTask(subTask1);
+        inMemoryTaskManager.makeNewPartEpicTask(subTask2);
+
+        //Then
+        Assertions.assertThrows(ScheduleConflictException.class,
+                () -> inMemoryTaskManager.makeNewPartEpicTask(subTask3));
+    }
+
+    @Test
+    void ShouldReturnTrueWhenPrioritizedTaskListIsCorrect() {
+        //Given
+        LocalDateTime ldt = LocalDateTime.now();
+        Duration duration = Duration.ofMinutes(100);
+        EpicTask epicTask = new EpicTask("", "");
+        PartEpicTask subTask1 = new PartEpicTask(2001, "subTask1", "subTask1",
+                TaskStatus.NEW, ldt, duration, epicTask.getId());
+        PartEpicTask subTask2 = new PartEpicTask(2002, "subTask2", "subTask2",
+                TaskStatus.NEW, null, null, epicTask.getId());
+        PartEpicTask subTask3 = new PartEpicTask(2003, "subTask3", "subTask3",
+                TaskStatus.NEW, ldt.plusMinutes(duration.toMinutes()), duration, epicTask.getId());
+        Comparator<SimpleTask> comparator = Comparator.comparing(task -> task.getStartTime().get());
+        comparator = comparator.thenComparing(SimpleTask::getId);
+        Set<SimpleTask> prioritizedTaskList = new TreeSet<>(comparator);
+        prioritizedTaskList.add(subTask1);
+        prioritizedTaskList.add(subTask3);
+
+
+        //When
+        inMemoryTaskManager.makeNewEpicTask(epicTask);
+        inMemoryTaskManager.makeNewPartEpicTask(subTask1);
+        inMemoryTaskManager.makeNewPartEpicTask(subTask2);
+        inMemoryTaskManager.makeNewPartEpicTask(subTask3);
+
+        //Then
+        Assertions.assertEquals(prioritizedTaskList, inMemoryTaskManager.getPrioritizedTasks());
     }
 }
