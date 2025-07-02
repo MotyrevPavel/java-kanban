@@ -25,6 +25,7 @@ public class InMemoryTaskManager implements TaskManager {
     protected final HistoryManager historyManager;
     protected Map<Integer, EpicTask> epicTaskMap;
     protected Set<SimpleTask> prioritizedTaskList;
+    private final Comparator<SimpleTask> comparator;
 
 
     public InMemoryTaskManager() {
@@ -34,6 +35,7 @@ public class InMemoryTaskManager implements TaskManager {
         this.historyManager = Managers.getDefaultHistory();
         Comparator<SimpleTask> comparator = Comparator.comparing(task -> task.getStartTime().get());
         comparator = comparator.thenComparing(SimpleTask::getId);
+        this.comparator = comparator;
         this.prioritizedTaskList = new TreeSet<>(comparator);
     }
 
@@ -54,15 +56,16 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void removeAllSimpleTask() {
-        simpleTaskMap.keySet().forEach(historyManager::remove);
+        historyManager.remove(simpleTaskMap.keySet());
         simpleTaskMap.values().forEach(prioritizedTaskList::remove);
         simpleTaskMap.clear();
     }
 
     @Override
     public void removeAllEpicTask() {
-        epicTaskMap.keySet().forEach(historyManager::remove);
-        partEpicTaskMap.keySet().forEach(historyManager::remove);
+        Set<Integer> removedTaskId = new HashSet<>(epicTaskMap.keySet());
+        removedTaskId.addAll(partEpicTaskMap.keySet());
+        historyManager.remove(removedTaskId);
         partEpicTaskMap.values().forEach(prioritizedTaskList::remove);
         epicTaskMap.clear();
         partEpicTaskMap.clear();
@@ -70,7 +73,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void removeAllPartEpicTask() {
-        partEpicTaskMap.keySet().forEach(historyManager::remove);
+        historyManager.remove(partEpicTaskMap.keySet());
         partEpicTaskMap.values().forEach(prioritizedTaskList::remove);
         partEpicTaskMap.clear();
         epicTaskMap = epicTaskMap.values().stream()
@@ -80,37 +83,35 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public SimpleTask getSimpleTaskById(Integer id) {
         SimpleTask task = simpleTaskMap.get(id);
-        addTaskToHistoryManager(id);
+        addTaskToHistoryManager(task);
         return task;
     }
 
     @Override
     public EpicTask getEpicTaskById(Integer id) {
         EpicTask task = epicTaskMap.get(id);
-        addTaskToHistoryManager(id);
+        addTaskToHistoryManager(task);
         return task;
     }
 
     @Override
     public PartEpicTask getPartEpicTaskById(Integer id) {
         PartEpicTask task = partEpicTaskMap.get(id);
-        addTaskToHistoryManager(id);
+        addTaskToHistoryManager(task);
         return task;
     }
 
     @Override
     public void makeNewSimpleTask(SimpleTask simpleTask) {
-        Integer taskId = simpleTask.getId();
-        simpleTaskMap.put(taskId, simpleTask);
-        addTaskToHistoryManager(taskId);
+        simpleTaskMap.put(simpleTask.getId(), simpleTask);
+        addTaskToHistoryManager(simpleTask);
         checkPriority(simpleTask);
     }
 
     @Override
     public void makeNewEpicTask(EpicTask epicTask) {
-        Integer taskId = epicTask.getId();
-        epicTaskMap.put(taskId, epicTask);
-        addTaskToHistoryManager(taskId);
+        epicTaskMap.put(epicTask.getId(), epicTask);
+        addTaskToHistoryManager(epicTask);
     }
 
     @Override
@@ -119,7 +120,7 @@ public class InMemoryTaskManager implements TaskManager {
         Integer idConnectEpicTask = partEpicTask.getIdConnectEpicTask();
 
         partEpicTaskMap.put(taskId, partEpicTask);
-        this.addTaskToHistoryManager(taskId);
+        this.addTaskToHistoryManager(partEpicTask);
         checkPriority(partEpicTask);
 
         EpicTask epicTask = epicTaskMap.get(idConnectEpicTask);
@@ -192,14 +193,26 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public Set<SimpleTask> getPrioritizedTasks() {
-        Comparator<SimpleTask> comparator = Comparator.comparing(task -> task.getStartTime().get());
-        comparator = comparator.thenComparing(SimpleTask::getId);
         Set<SimpleTask> set = new TreeSet<>(comparator);
         set.addAll(prioritizedTaskList);
         return set;
     }
 
-    public boolean validateScheduleConflict(SimpleTask firstTask, SimpleTask secondTask) {
+    protected void checkPriority(SimpleTask task) {
+        if (task.getStartTime().isEmpty()) {
+            return;
+        }
+        prioritizedTaskList.add(task);
+        prioritizedTaskList.stream().reduce((first, second) -> {
+            boolean hasConflict = validateScheduleConflict(first, second);
+            if (hasConflict) {
+                throw new ScheduleConflictException("Есть пересечения в расписании выполнения задач");
+            }
+            return second;
+        });
+    }
+
+    private boolean validateScheduleConflict(SimpleTask firstTask, SimpleTask secondTask) {
         if (firstTask.getStartTime().isPresent()
                 && secondTask.getStartTime().isPresent()
                 && firstTask.getDuration().isPresent()) {
@@ -311,16 +324,8 @@ public class InMemoryTaskManager implements TaskManager {
                 epicTask.getListPartTaskId());
     }
 
-    private void addTaskToHistoryManager(Integer taskId) {
-        SimpleTask task;
+    private void addTaskToHistoryManager(SimpleTask task) {
         try {
-            if (simpleTaskMap.containsKey(taskId)) {
-                task = simpleTaskMap.get(taskId);
-            } else if (epicTaskMap.containsKey(taskId)) {
-                task = epicTaskMap.get(taskId);
-            } else {
-                task = partEpicTaskMap.get(taskId);
-            }
             historyManager.add(task.clone());
         } catch (Exception e) {
             System.err.println(e.getMessage());
@@ -367,19 +372,5 @@ public class InMemoryTaskManager implements TaskManager {
                 epicTask.getDuration().orElse(null),
                 epicTask.getEndTime().orElse(null),
                 listPartTaskId);
-    }
-
-    protected void checkPriority(SimpleTask task) {
-        if (task.getStartTime().isEmpty()) {
-            return;
-        }
-        prioritizedTaskList.add(task);
-        prioritizedTaskList.stream().reduce((first, second) -> {
-            boolean hasConflict = validateScheduleConflict(first, second);
-            if (hasConflict) {
-                throw new ScheduleConflictException("Есть пересечения в расписании выполнения задач");
-            }
-            return second;
-        });
     }
 }

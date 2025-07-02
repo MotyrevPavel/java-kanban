@@ -21,7 +21,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
     //При изменении заголовка таблицы, нужно проверить метод fromString, т.к. массив
     //этого метода жестко привязан к порядку элементов заголовка таблицы
     //Поле endTime в EpicTask - рассчитывается при загрузке данных из файла и не учавствует в серриализации
-    private final String tableTitle = "id,type,name,status,description,epic,startTime,duration";
+    private static final String TABLE_TITLE = "id,type,name,status,description,epic,startTime,duration";
     private final File file;
 
     public FileBackedTaskManager(File file) {
@@ -33,7 +33,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
     public void save() {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(file, StandardCharsets.UTF_8))) {
 
-            writer.write(tableTitle);
+            writer.write(TABLE_TITLE);
             writer.newLine();
 
             for (SimpleTask value : simpleTaskMap.values()) {

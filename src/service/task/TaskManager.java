@@ -50,6 +50,4 @@ public interface TaskManager {
     List<PartEpicTask> getEpicSubtasks(EpicTask epicTask);
 
     Set<SimpleTask> getPrioritizedTasks();
-
-    boolean validateScheduleConflict(SimpleTask firstTask, SimpleTask secondTask);
 }
