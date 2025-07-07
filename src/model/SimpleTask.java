@@ -3,41 +3,39 @@ package model;
 import util.TaskStatus;
 import util.TaskType;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.util.Optional;
+
 public class SimpleTask implements Cloneable {
     private static int idGenerator = 0;
-    private final int id;
+    private final Integer id;
     private final String name;
     private final String description;
-    private TaskStatus status;
+    private final TaskStatus status;
+    private final LocalDateTime startTime;
+    private final Duration duration;
+
+    public SimpleTask(Integer id, String name, String description, TaskStatus status,
+                      LocalDateTime startTime, Duration duration) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.status = status;
+        this.startTime = startTime;
+        this.duration = duration;
+    }
+
+    public SimpleTask(String name, String description, LocalDateTime startTime, Duration duration) {
+        this(idGenerator++, name, description, TaskStatus.NEW, startTime, duration);
+    }
 
     public SimpleTask(String name, String description) {
-        this.name = name;
-        this.description = description;
-        status = TaskStatus.NEW;
-        id = idGenerator;
-        idGenerator++;
-    }
-
-    public SimpleTask(int id, String name, String description) {
-        this.name = name;
-        this.description = description;
-        status = TaskStatus.NEW;
-        this.id = id;
-    }
-
-    public SimpleTask(int id, String name, TaskStatus status, String description) {
-        this.id = id;
-        this.name = name;
-        this.status = status;
-        this.description = description;
+        this(idGenerator++, name, description, TaskStatus.NEW, null, null);
     }
 
     public int getId() {
         return id;
-    }
-
-    public TaskStatus getStatus() {
-        return status;
     }
 
     public String getName() {
@@ -48,8 +46,25 @@ public class SimpleTask implements Cloneable {
         return description;
     }
 
-    public void setStatus(TaskStatus status) {
-        this.status = status;
+    public TaskStatus getStatus() {
+        return status;
+    }
+
+    public Optional<LocalDateTime> getStartTime() {
+        return Optional.ofNullable(startTime);
+    }
+
+    public Optional<Duration> getDuration() {
+        return Optional.ofNullable(duration);
+    }
+
+
+    public Optional<LocalDateTime> getEndTime() {
+        try {
+            return Optional.of(startTime.plusMinutes(duration.toMinutes()));
+        } catch (NullPointerException e) {
+            return Optional.empty();
+        }
     }
 
     @Override
@@ -62,7 +77,7 @@ public class SimpleTask implements Cloneable {
         if (o == null || getClass() != o.getClass()) return false;
 
         SimpleTask that = (SimpleTask) o;
-        return id == that.id;
+        return id.equals(that.id);
     }
 
     @Override
@@ -72,11 +87,15 @@ public class SimpleTask implements Cloneable {
 
     @Override
     public String toString() {
+        Long stringDuration = getDuration().isPresent() ? duration.toMinutes() : null;
+
         return id +
                 "," + TaskType.SIMPLE +
                 "," + name +
                 "," + status +
                 "," + description +
-                ',' + name;
+                ',' + name +
+                ',' + startTime +
+                ',' + stringDuration;
     }
 }
