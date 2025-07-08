@@ -1,5 +1,6 @@
 package service.task;
 
+import exceptions.NotFoundException;
 import exceptions.ScheduleConflictException;
 import util.Managers;
 import service.history.HistoryManager;
@@ -83,22 +84,34 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public SimpleTask getSimpleTaskById(Integer id) {
         SimpleTask task = simpleTaskMap.get(id);
-        addTaskToHistoryManager(task);
-        return task;
+        if (task != null) {
+            addTaskToHistoryManager(task);
+            return task;
+        } else {
+            throw new NotFoundException();
+        }
     }
 
     @Override
     public EpicTask getEpicTaskById(Integer id) {
         EpicTask task = epicTaskMap.get(id);
-        addTaskToHistoryManager(task);
-        return task;
+        if (task != null) {
+            addTaskToHistoryManager(task);
+            return task;
+        } else {
+            throw new NotFoundException();
+        }
     }
 
     @Override
     public PartEpicTask getPartEpicTaskById(Integer id) {
         PartEpicTask task = partEpicTaskMap.get(id);
-        addTaskToHistoryManager(task);
-        return task;
+        if (task != null) {
+            addTaskToHistoryManager(task);
+            return task;
+        } else {
+            throw new NotFoundException();
+        }
     }
 
     @Override

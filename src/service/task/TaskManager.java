@@ -1,5 +1,6 @@
 package service.task;
 
+import exceptions.NotFoundException;
 import model.EpicTask;
 import model.PartEpicTask;
 import model.SimpleTask;
@@ -21,9 +22,9 @@ public interface TaskManager {
 
     void removeAllPartEpicTask();
 
-    SimpleTask getSimpleTaskById(Integer id);
+    SimpleTask getSimpleTaskById(Integer id) throws NotFoundException;
 
-    EpicTask getEpicTaskById(Integer id);
+    EpicTask getEpicTaskById(Integer id) throws NotFoundException;
 
     PartEpicTask getPartEpicTaskById(Integer id);
 
