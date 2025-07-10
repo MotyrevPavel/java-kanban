@@ -1,11 +1,24 @@
 import model.EpicTask;
 import model.PartEpicTask;
 import model.SimpleTask;
+import server.HttpTaskServer;
 import service.task.TaskManager;
 import util.Managers;
 
+import java.io.IOException;
+
 public class Main {
+
     public static void main(String[] args) {
+        try {
+            HttpTaskServer server = new HttpTaskServer();
+            server.start();
+        } catch (IOException e) {
+            System.err.println(e.getMessage());
+        }
+    }
+
+    private static void testTaskManagerInConsole() {
         TaskManager taskManager = Managers.getTaskManager();
 
         System.out.println();

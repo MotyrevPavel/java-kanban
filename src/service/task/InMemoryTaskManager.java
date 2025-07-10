@@ -1,5 +1,6 @@
 package service.task;
 
+import exceptions.NotFoundException;
 import exceptions.ScheduleConflictException;
 import util.Managers;
 import service.history.HistoryManager;
@@ -83,35 +84,48 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public SimpleTask getSimpleTaskById(Integer id) {
         SimpleTask task = simpleTaskMap.get(id);
-        addTaskToHistoryManager(task);
-        return task;
+        if (task != null) {
+            addTaskToHistoryManager(task);
+            return task;
+        } else {
+            throw new NotFoundException();
+        }
     }
 
     @Override
     public EpicTask getEpicTaskById(Integer id) {
         EpicTask task = epicTaskMap.get(id);
-        addTaskToHistoryManager(task);
-        return task;
+        if (task != null) {
+            addTaskToHistoryManager(task);
+            return task;
+        } else {
+            throw new NotFoundException();
+        }
     }
 
     @Override
     public PartEpicTask getPartEpicTaskById(Integer id) {
         PartEpicTask task = partEpicTaskMap.get(id);
-        addTaskToHistoryManager(task);
-        return task;
+        if (task != null) {
+            addTaskToHistoryManager(task);
+            return task;
+        } else {
+            throw new NotFoundException();
+        }
     }
 
     @Override
     public void makeNewSimpleTask(SimpleTask simpleTask) {
-        simpleTaskMap.put(simpleTask.getId(), simpleTask);
-        addTaskToHistoryManager(simpleTask);
         checkPriority(simpleTask);
+        addTaskToHistoryManager(simpleTask);
+        simpleTaskMap.put(simpleTask.getId(), simpleTask);
     }
 
     @Override
     public void makeNewEpicTask(EpicTask epicTask) {
-        epicTaskMap.put(epicTask.getId(), epicTask);
         addTaskToHistoryManager(epicTask);
+        epicTaskMap.put(epicTask.getId(), epicTask);
+
     }
 
     @Override
@@ -119,9 +133,9 @@ public class InMemoryTaskManager implements TaskManager {
         Integer taskId = partEpicTask.getId();
         Integer idConnectEpicTask = partEpicTask.getIdConnectEpicTask();
 
-        partEpicTaskMap.put(taskId, partEpicTask);
-        this.addTaskToHistoryManager(partEpicTask);
         checkPriority(partEpicTask);
+        this.addTaskToHistoryManager(partEpicTask);
+        partEpicTaskMap.put(taskId, partEpicTask);
 
         EpicTask epicTask = epicTaskMap.get(idConnectEpicTask);
         epicTask = addSubTaskToPartEpicTaskList(epicTask, taskId);
@@ -147,37 +161,49 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void removeSimpleTaskById(Integer id) {
-        prioritizedTaskList.remove(simpleTaskMap.get(id));
-        simpleTaskMap.remove(id);
-        historyManager.remove(id);
+        if (simpleTaskMap.containsKey(id)) {
+            prioritizedTaskList.remove(simpleTaskMap.get(id));
+            simpleTaskMap.remove(id);
+            historyManager.remove(id);
+        } else {
+            throw new NotFoundException();
+        }
     }
 
     @Override
     public void removeEpicTaskById(Integer id) {
-        historyManager.remove(id);
-        getEpicSubtasks(epicTaskMap.get(id)).stream()
-                .map(SimpleTask::getId)
-                .forEach(partEpicTaskId -> {
-                    partEpicTaskMap.remove(partEpicTaskId);
-                    historyManager.remove(partEpicTaskId);
-                });
-        epicTaskMap.remove(id);
+        if (epicTaskMap.containsKey(id)) {
+            historyManager.remove(id);
+            getEpicSubtasks(epicTaskMap.get(id)).stream()
+                    .map(SimpleTask::getId)
+                    .forEach(partEpicTaskId -> {
+                        partEpicTaskMap.remove(partEpicTaskId);
+                        historyManager.remove(partEpicTaskId);
+                    });
+            epicTaskMap.remove(id);
+        } else {
+            throw new NotFoundException();
+        }
     }
 
     @Override
     public void removePartEpicTaskById(Integer id) {
-        PartEpicTask partEpicTask = partEpicTaskMap.get(id);
-        int idConnectEpicTask = partEpicTask.getIdConnectEpicTask();
+        if (partEpicTaskMap.containsKey(id)) {
+            PartEpicTask partEpicTask = partEpicTaskMap.get(id);
+            int idConnectEpicTask = partEpicTask.getIdConnectEpicTask();
 
-        prioritizedTaskList.remove(partEpicTask);
-        partEpicTaskMap.remove(id);
-        historyManager.remove(id);
+            prioritizedTaskList.remove(partEpicTask);
+            partEpicTaskMap.remove(id);
+            historyManager.remove(id);
 
-        EpicTask epicTask = epicTaskMap.get(idConnectEpicTask);
-        epicTask = removeSubTaskFromPartEpicTaskList(epicTask, id);
-        epicTask = updateEpicTaskStatus(epicTask);
-        epicTask = updateEpicTaskEndTime(epicTask);
-        epicTaskMap.put(epicTask.getId(), epicTask);
+            EpicTask epicTask = epicTaskMap.get(idConnectEpicTask);
+            epicTask = removeSubTaskFromPartEpicTaskList(epicTask, id);
+            epicTask = updateEpicTaskStatus(epicTask);
+            epicTask = updateEpicTaskEndTime(epicTask);
+            epicTaskMap.put(epicTask.getId(), epicTask);
+        } else {
+            throw new NotFoundException();
+        }
     }
 
     @Override
